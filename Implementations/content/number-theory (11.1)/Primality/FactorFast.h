@@ -28,7 +28,29 @@ void factor_rec(ul n, map<ul,int>& cnt) {
 	factor_rec(u,cnt), factor_rec(n/u,cnt);
 }
 
-/// V<pair<ul,int>> factor(ul n) {
-/// 	map<ul,int> cnt; factor_rec(n,cnt);
-/// 	return V<pair<ul,int>>(all(cnt));
-/// }
+//// V<pair<ul,int>> factor(ul n) {
+//// 	map<ul,int> cnt; factor_rec(n,cnt);
+//// 	return V<pair<ul,int>>(all(cnt));
+//// }
+
+//// V<ul> divisors(ul n) {
+//// 	map<ul,int> cnt; factor_rec(n,cnt);
+//// 	int num_divisors = 1;
+//// 	for ( auto& [p, e] : cnt ) {
+//// 		num_divisors *= e+1;
+//// 	}
+//// 	set<ul> out;
+//// 	for ( int mask = 0 ; mask < num_divisors ; ++mask ) {
+//// 		ul curr_divisor = 1;
+//// 		int curr_mask = mask;
+//// 		for ( auto& [p, e] : cnt ) {
+//// 			int curr_pow = curr_mask % (e+1);
+//// 			curr_mask /= (e+1);
+//// 			rep(curr_pow) {
+//// 				curr_divisor *= p;
+//// 			}
+//// 		}
+//// 		out.insert( curr_divisor );
+//// 	}
+//// 	return out;
+//// }

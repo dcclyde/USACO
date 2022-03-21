@@ -2,11 +2,12 @@
  * Description: Tests primality up to $SZ$. Runs faster if only
  	* odd indices are stored.
  * Time: O(SZ\log\log SZ) or O(SZ)
- * Source: KACTL 
+ * Source: KACTL
  * Verification: https://open.kattis.com/problems/primesieve
  */
 
-template<int SZ> struct Sieve { 
+template<int SZm1> struct Sieve {
+	constexpr int SZ = SZm1 + 1;
 	bitset<SZ> is_prime; vi primes;
 	Sieve() {
 		is_prime.set(); is_prime[0] = is_prime[1] = 0;
@@ -17,8 +18,8 @@ template<int SZ> struct Sieve {
 	}
 	// int sp[SZ]{}; // smallest prime that divides
 	// Sieve() { // above is faster
-	// 	FOR(i,2,SZ) { 
-	// 		if (sp[i] == 0) sp[i] = i, primes.pb(i); 
+	// 	FOR(i,2,SZ) {
+	// 		if (sp[i] == 0) sp[i] = i, primes.pb(i);
 	// 		for (int p: primes) {
 	// 			if (p > sp[i] || i*p >= SZ) break;
 	// 			sp[i*p] = p;
