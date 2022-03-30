@@ -25,7 +25,7 @@ tcT> struct SegTree { // cmb(ID,b) = b
 		}
 		return cmb(ra,rb);
 	}
-	// int first_at_least(int lo, int val, int ind, int l=0, int r=-1) { // if seg stores max across range
+	// int first_at_least(int lo, int val, int ind=1, int l=0, int r=-1) { // if seg stores max across range
 	// 	if ( r == -1 ) {
 	// 		r = n-1;
 	// 	}
@@ -36,8 +36,7 @@ tcT> struct SegTree { // cmb(ID,b) = b
 	// 	return first_at_least(lo,val,2*ind+1,m+1,r);
 	// }
     void detailed_printouts() {
-        // recommend calling like `dbg_only(st.detailed_printouts);`.
-        #pragma region
+        #pragma region  // call like `dbg_only(st.detailed_printouts);`.
         int ST_SIZE = n;
         int ST_PRINT_SIZE = orig_n;
         // ST_PRINT_SIZE = ST_SIZE;  // toggle whether to print irrelevant suffix

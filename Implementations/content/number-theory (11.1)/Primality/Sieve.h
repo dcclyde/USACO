@@ -7,7 +7,7 @@
  */
 
 template<int SZm1> struct Sieve {
-	constexpr int SZ = SZm1 + 1;
+	static constexpr int SZ = SZm1 + 1;
 	bitset<SZ> is_prime; vi primes;
 	Sieve() {
 		is_prime.set(); is_prime[0] = is_prime[1] = 0;

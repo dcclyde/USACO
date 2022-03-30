@@ -1,3 +1,4 @@
+#pragma region  // mint
 /**
  * Description: modular arithmetic operations
  * Source:
@@ -10,7 +11,8 @@
 	* https://open.kattis.com/problems/modulararithmetic
  */
 
-#pragma once
+#ifndef BENQ_MODINT
+#define BENQ_MODINT
 
 template<int MOD, int RT> struct mint {
 	static const int mod = MOD;
@@ -69,3 +71,6 @@ template <int MOD, int RT>
 string to_string(mint<MOD, RT> modint) {
     return to_string((int)modint);
 }
+
+#endif
+#pragma endregion  // mint

@@ -33,6 +33,7 @@ void factor_rec(ul n, map<ul,int>& cnt) {
 //// 	return V<pair<ul,int>>(all(cnt));
 //// }
 
+//// // This version is good for big N. Costs N^.25 + some garbage.
 //// V<ul> divisors(ul n) {
 //// 	map<ul,int> cnt; factor_rec(n,cnt);
 //// 	int num_divisors = 1;
@@ -52,5 +53,18 @@ void factor_rec(ul n, map<ul,int>& cnt) {
 //// 		}
 //// 		out.insert( curr_divisor );
 //// 	}
+//// 	return out;
+//// }
+
+//// // This version is good for small N.
+//// V<int> divisors(int n) {
+//// 	V<int> out;
+//// 	for ( int d = 1 ; d*d <= n ; ++d ) {
+//// 		if ( n % d == 0 ) {
+//// 			out.push_back(d);
+//// 			out.push_back(n/d);
+//// 		}
+//// 	}
+//// 	remDup(out);
 //// 	return out;
 //// }
