@@ -9,12 +9,14 @@
  */
 
 tcT> struct SegTree { // cmb(ID,b) = b
-	const T ID{}; T cmb(T a, T b) { return a+b; }
+	const T ID{};  // ! identity
+    T cmb(T a, T b) { return a+b; }  // ! seg * seg
 	int n; V<T> seg; int orig_n;
 	void init(int _n) { // upd, query also work if n = _n
 		for (n = 1; n < _n; ) n *= 2;
 		seg.assign(2*n,ID); orig_n = _n;}
 	void pull(int p) { seg[p] = cmb(seg[2*p],seg[2*p+1]); }
+    void build() { ROF(i,1,n) pull(i); }
 	void upd(int p, T val) { // set val at position p
 		seg[p += n] = val; for (p /= 2; p; p /= 2) pull(p); }
 	T query(int l, int r) {	// associative op on [l, r]

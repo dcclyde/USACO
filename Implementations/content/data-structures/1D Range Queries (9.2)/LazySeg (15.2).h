@@ -32,7 +32,7 @@
 // };
 
 tcT, class S> struct LazySeg {
-	const T idT{}; const S idS{};
+	const T idT{}; const S idS{};  // ! identity
 	int n; V<T> seg; V<S> lazy; int orig_n; int SZ;
 	T cmb(T a, T b) {  // ! seg * seg
 		return a+b;

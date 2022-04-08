@@ -37,15 +37,19 @@ template<int MOD, int RT> struct mint {
 		if ((v -= o.v) < 0) v += MOD;
 		return *this; }
 	mint& operator*=(const mint& o) {
-		v = int((ll)v*o.v%MOD); return *this; }
+		v = int((ll)v*o.v%MOD);
+		return *this; }
 	mint& operator/=(const mint& o) { return (*this) *= inv(o); }
 	friend mint pow(mint a, ll p) {
 		mint ans = 1; assert(p >= 0);
 		for (; p; p /= 2, a *= a) if (p&1) ans *= a;
 		return ans; }
 	friend mint inv(const mint& a) { assert(a.v != 0);
-		return pow(a,MOD-2); }
-
+		return pow(a,MOD-2);
+		// if MOD isn't prime use second version instead.
+		// Alternatively, find totient of MOD and use pow(a, totient-1).
+		// return (1<a) ? (b - ll(inv(b%a,a))*b/a) : (1);
+	}
 	mint operator-() const { return mint(-v); }
 	mint& operator++() { return *this += 1; }
 	mint& operator--() { return *this -= 1; }
