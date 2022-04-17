@@ -36,24 +36,15 @@ void factor_rec(ul n, map<ul,int>& cnt) {
 //// // This version is good for big N. Costs N^.25 + some garbage.
 //// V<ul> divisors(ul n) {
 //// 	map<ul,int> cnt; factor_rec(n,cnt);
-//// 	int num_divisors = 1;
-//// 	for ( auto& [p, e] : cnt ) {
-//// 		num_divisors *= e+1;
-//// 	}
-//// 	set<ul> out;
-//// 	for ( int mask = 0 ; mask < num_divisors ; ++mask ) {
-//// 		ul curr_divisor = 1;
-//// 		int curr_mask = mask;
-//// 		for ( auto& [p, e] : cnt ) {
-//// 			int curr_pow = curr_mask % (e+1);
-//// 			curr_mask /= (e+1);
-//// 			rep(curr_pow) {
-//// 				curr_divisor *= p;
-//// 			}
+//// 	V<ul> out = {1};
+//// 	for(auto& [p, e] : cnt) {
+////         int sz = out.size(); ul ppow = p;
+//// 		rep(e) {
+//// 			FOR(k, 0, sz) { out.push_back(out[k] * ppow); }
+////             ppow *= p;
 //// 		}
-//// 		out.insert( curr_divisor );
 //// 	}
-//// 	return out;
+//// 	sort(all(out)); return out;
 //// }
 
 //// // This version is good for small N.

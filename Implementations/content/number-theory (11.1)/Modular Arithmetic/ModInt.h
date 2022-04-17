@@ -48,7 +48,7 @@ template<int MOD, int RT> struct mint {
 		return pow(a,MOD-2);
 		// if MOD isn't prime use second version instead.
 		// Alternatively, find totient of MOD and use pow(a, totient-1).
-		// return (1<a) ? (b - ll(inv(b%a,a))*b/a) : (1);
+		// return (1<a) ? (MOD - ll(inv(MOD%a,a))*MOD/a) : (1);
 	}
 	mint operator-() const { return mint(-v); }
 	mint& operator++() { return *this += 1; }

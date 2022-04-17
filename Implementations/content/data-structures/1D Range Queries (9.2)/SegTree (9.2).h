@@ -27,18 +27,20 @@ tcT> struct SegTree { // cmb(ID,b) = b
 		}
 		return cmb(ra,rb);
 	}
-	// int first_at_least(int lo, int val, int ind=1, int l=0, int r=-1) { // if seg stores max across range
-	// 	if ( r == -1 ) {
-	// 		r = n-1;
-	// 	}
-	// 	if (r < lo || val > seg[ind]) return -1;
+	// int first_satisfying(int start, int val, int ind=1, int l=0, int r=-1) { // if seg stores max across range
+	// 	if (r == -1) {r = n-1;}
+    //  // ! is there a good idx in [l, r]?
+    //  bool ok = (seg[ind] >= val);
+	// 	if (r < lo || !ok) return -1;
 	// 	if (l == r) return l;
 	// 	int m = (l+r)/2;
-	// 	int res = first_at_least(lo,val,2*ind,l,m); if (res != -1) return res;
-	// 	return first_at_least(lo,val,2*ind+1,m+1,r);
+	// 	int res = first_satisfying(lo,val,2*ind,l,m); if (res != -1) return res;
+    //  // ! Look for something different in R child if needed (e.g. if we want sum >= X)
+	// 	return first_satisfying(lo,val,2*ind+1,m+1,r);
 	// }
     void detailed_printouts() {
-        #pragma region  // call like `dbg_only(st.detailed_printouts);`.
+        #pragma region
+        dbg_only(
         int ST_SIZE = n;
         int ST_PRINT_SIZE = orig_n;
         // ST_PRINT_SIZE = ST_SIZE;  // toggle whether to print irrelevant suffix
@@ -71,6 +73,7 @@ tcT> struct SegTree { // cmb(ID,b) = b
             }
         }
         el;
+        );  // end dbg_only
         #pragma endregion
     }
 };

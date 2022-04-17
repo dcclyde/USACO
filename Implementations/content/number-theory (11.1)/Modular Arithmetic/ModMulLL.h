@@ -1,6 +1,6 @@
 /**
  * Description: Multiply two 64-bit integers mod another if 128-bit is not available.
-	* modMul is equivalent to \texttt{(ul)(\_\_int128(a)*b\%mod)}. 
+	* modMul is equivalent to \texttt{(ul)(\_\_int128(a)*b\%mod)}.
 	* Works for $0\le a,b<mod<2^{63}.$
  * Source: KACTL
  * Verification: see "Faster Factoring"
@@ -16,3 +16,6 @@ ul modPow(ul a, ul b, const ul mod) {
 	ul res = modPow(a,b/2,mod); res = modMul(res,res,mod);
 	return b&1 ? modMul(res,a,mod) : res;
 }
+// __int128_t modInv(__int128_t a, __int128_t b){
+//     return 1<a ? b - modInv(b%a,a)*b/a : 1;
+// }
