@@ -27,16 +27,29 @@ tcT> struct SegTree { // cmb(ID,b) = b
 		}
 		return cmb(ra,rb);
 	}
-	// int first_satisfying(int start, int val, int ind=1, int l=0, int r=-1) { // if seg stores max across range
+    // // return smallest x s.t. query(base, x) satisfies some criterion
+	// int first_satisfying_R(int base, int val, int ind=1, int l=0, int r=-1) {
 	// 	if (r == -1) {r = n-1;}
-    //  // ! is there a good idx in [l, r]?
-    //  bool ok = (seg[ind] >= val);
-	// 	if (r < lo || !ok) return -1;
+    //     // ! is there a good idx in [l, r]?
+    //     bool ok = (seg[ind] >= val);
+	// 	if (r < base || !ok) return -1;
 	// 	if (l == r) return l;
 	// 	int m = (l+r)/2;
-	// 	int res = first_satisfying(lo,val,2*ind,l,m); if (res != -1) return res;
-    //  // ! Look for something different in R child if needed (e.g. if we want sum >= X)
-	// 	return first_satisfying(lo,val,2*ind+1,m+1,r);
+	// 	int res = first_satisfying_R(base,val,2*ind,l,m); if (res != -1) return res;
+    //     // ! Look for something different in other child if needed (e.g. if we want sum >= X)
+	// 	return first_satisfying_R(base,val,2*ind+1,m+1,r);
+	// }
+    // // return largest x s.t. query(x, base) satisfies some criterion
+	// int first_satisfying_L(int base, int val, int ind=1, int l=0, int r=-1) {
+	// 	if (r == -1) {r = n-1;}
+    //     // ! is there a good idx in [l, r]?
+    //     bool ok = (seg[ind] >= val);
+	// 	if (l > base || !ok) return -1;
+	// 	if (l == r) return l;
+	// 	int m = (l+r)/2;
+	// 	int res = first_satisfying_L(base,val,2*ind+1,m+1,r); if (res != -1) return res;
+    //     // ! Look for something different in other child if needed (e.g. if we want sum >= X)
+	// 	return first_satisfying_L(base,val,2*ind,l,m);
 	// }
     void detailed_printouts() {
         #pragma region
@@ -80,8 +93,6 @@ tcT> struct SegTree { // cmb(ID,b) = b
 template<class T>
 string to_string(SegTree<T> st) {
     vector<T> out;
-    for ( int k = st.n ; k < st.n + st.orig_n ; ++k ) {
-        out.push_back( st.seg[k] );
-    }
+    FOR(k, st.n, st.n + st.orig_n) { out.push_back( st.seg[k] ); }
     return to_string( out );
 }

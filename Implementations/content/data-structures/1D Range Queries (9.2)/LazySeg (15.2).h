@@ -40,19 +40,30 @@ tcT, class S> struct LazySeg {
 		int M = (L+R)/2; return cmb(query(lo,hi,2*ind,L,M),
 			query(lo,hi,2*ind+1,M+1,R));
 	}
-    int first_satisfying(int start, int ind=1, int L=0, int R=-1) {
-        if (R == -1) {R = SZ-1;}
-        // ! Is there a good idx in [l, r]?
-        bool ok = (query(L, R, ind, L, R) != 0);
-        if (R < start || !ok) {return -1;}
-        if (L == R) {return L;}
-        int M = (L+R)/2;
-        int out = first_satisfying(2*ind, L, M);
-        if (out == -1) {
-            out = first_satisfying(2*ind+1, M+1, R);
-        }
-        return out;
-    }
+    // // return smallest x s.t. query(base, x) satisfies some criterion
+	// int first_satisfying_R(int base, int val, int ind=1, int l=0, int r=-1) {
+	// 	if (r == -1) {r = n-1;}
+    //     // ! is there a good idx in [l, r]?
+    //     bool ok = (query(l,r,ind,l,r) >= val);
+	// 	if (r < base || !ok) return -1;
+	// 	if (l == r) return l;
+	// 	int m = (l+r)/2;
+	// 	int res = first_satisfying_R(base,val,2*ind,l,m); if (res != -1) return res;
+    //     // ! Look for something different in other child if needed (e.g. if we want sum >= X)
+	// 	return first_satisfying_R(base,val,2*ind+1,m+1,r);
+	// }
+    // // return largest x s.t. query(x, base) satisfies some criterion
+	// int first_satisfying_L(int base, int val, int ind=1, int l=0, int r=-1) {
+	// 	if (r == -1) {r = n-1;}
+    //     // ! is there a good idx in [l, r]?
+    //     bool ok = (query(l,r,ind,l,r) >= val);
+	// 	if (l > base || !ok) return -1;
+	// 	if (l == r) return l;
+	// 	int m = (l+r)/2;
+	// 	int res = first_satisfying_L(base,val,2*ind+1,m+1,r); if (res != -1) return res;
+    //     // ! Look for something different in other child if needed (e.g. if we want sum >= X)
+	// 	return first_satisfying_L(base,val,2*ind,l,m);
+	// }
     void detailed_printouts() {
         #pragma region
         dbg_only(
@@ -96,12 +107,9 @@ tcT, class S> struct LazySeg {
 
 template<class T, class S>
 string to_string(LazySeg<T, S> st) {
-    st.push_all();
-    vector<T> out;
-    for ( int k = st.n ; k < st.n + st.orig_n ; ++k ) {
-        out.push_back( st.seg[k] );
-    }
-    return to_string( out );
+    st.push_all(); vector<T> out;
+    FOR(k, st.n, st.n + st.orig_n) { out.push_back(st.seg[k]); }
+    return to_string(out);
 }
 
 

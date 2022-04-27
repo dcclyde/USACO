@@ -1,11 +1,13 @@
 /**
- * Description: Calculates least common ancestor in tree with verts 
- 	* $0\ldots N-1$ and root $R$ using binary jumping. 
+ * Description: Calculates least common ancestor in tree with verts
+ 	* $0\ldots N-1$ and root $R$ using binary jumping.
  * Time: O(N\log N) build, O(\log N) query
  * Memory: O(N\log N)
  * Source: USACO Camp, KACTL
  * Verification: *
  */
+
+// SEO binary lifting
 
 struct LCA {
 	int N; V<vi> par, adj; vi depth;
@@ -17,7 +19,7 @@ struct LCA {
 	void gen(int R = 0) { par[0][R] = R; dfs(R); }
 	void dfs(int x = 0) {
 		FOR(i,1,sz(par)) par[i][x] = par[i-1][par[i-1][x]];
-		each(y,adj[x]) if (y != par[0][x]) 
+		each(y,adj[x]) if (y != par[0][x])
 			depth[y] = depth[par[0][y]=x]+1, dfs(y);
 	}
 	int jmp(int x, int d) {
