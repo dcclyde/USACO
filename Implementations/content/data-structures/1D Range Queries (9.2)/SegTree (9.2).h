@@ -20,6 +20,7 @@ tcT> struct SegTree { // cmb(ID,b) = b
 	void upd(int p, T val) { // set val at position p
 		seg[p += n] = val; for (p /= 2; p; p /= 2) pull(p); }
 	T query(int l, int r) {	// associative op on [l, r]
+        if (l > r) {return ID;}
 		T ra = ID, rb = ID;
 		for (l += n, r += n+1; l < r; l /= 2, r /= 2) {
 			if (l&1) ra = cmb(ra,seg[l++]);
@@ -58,7 +59,7 @@ tcT> struct SegTree { // cmb(ID,b) = b
         int ST_PRINT_SIZE = orig_n;
         // ST_PRINT_SIZE = ST_SIZE;  // toggle whether to print irrelevant suffix
         el;
-        dbgc("ST DETAILS");
+        dbgc("SegTree DETAILS");
         FOR(k, 1, ST_SIZE + ST_PRINT_SIZE) {
             if ( k >= ST_SIZE) {
                 int p = k - ST_SIZE;

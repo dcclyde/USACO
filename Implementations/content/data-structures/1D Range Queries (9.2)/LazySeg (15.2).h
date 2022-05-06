@@ -104,7 +104,6 @@ tcT, class S> struct LazySeg {
     }
 };
 
-
 template<class T, class S>
 string to_string(LazySeg<T, S> st) {
     st.push_all(); vector<T> out;
