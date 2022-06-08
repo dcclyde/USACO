@@ -1,3 +1,6 @@
+
+// const int MOD = 1'000'000'007;
+// const int MOD = 998'244'353;
 #pragma region  // mint
 /**
  * Description: modular arithmetic operations
@@ -41,7 +44,8 @@ template<int MOD, int RT> struct mint {
 		return *this; }
 	mint& operator/=(const mint& o) { return (*this) *= inv(o); }
 	friend mint pow(mint a, ll p) {
-		mint ans = 1; assert(p >= 0);
+		mint ans = 1;
+        if (p < 0) {return pow(inv(a), -p);}
 		for (; p; p /= 2, a *= a) if (p&1) ans *= a;
 		return ans; }
 	friend mint inv(const mint& a) { assert(a.v != 0);
