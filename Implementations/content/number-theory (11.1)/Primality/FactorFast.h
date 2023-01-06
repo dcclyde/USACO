@@ -113,7 +113,9 @@ ul pollard(ul n) { // return some nontrivial factor of n
 	}
 	return gcd(prd, n);
 }
-void factor_rec(ul n, map<ul,int>& cnt) {
+template<class A, class B>
+void factor_rec(ul n, map<A,B>& cnt) {
+// void factor_rec(ul n, map<ul,int>& cnt) {
     if (n < SIEVE_MAX) {
         while (n > 1) {
             ll p = sieve.sp[n];
@@ -131,7 +133,7 @@ V<pair<ul,int>> factor(ul n) {
 }
 #pragma endregion
 
-#pragma region  // divisors, phi (big N, costs N^.25 + garbage)
+#pragma region  // divisors, totient (big N, costs N^.25 + garbage)
 ll num_divisors(ul n) {
 	map<ul,int> cnt; factor_rec(n,cnt);
 	ll out = 1;
