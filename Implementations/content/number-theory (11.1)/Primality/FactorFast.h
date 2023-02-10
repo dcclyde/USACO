@@ -162,7 +162,7 @@ ll totient(ul n) {
 
 #pragma region  // divisors (small N, sqrt(N))
 // This version is good for small N.
-V<int> divisors(int n) {
+V<int> divisorsSmallN(int n) {
 	V<int> out;
 	for ( int d = 1 ; d*d <= n ; ++d ) {
 		if ( n % d == 0 ) {
