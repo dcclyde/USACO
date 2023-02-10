@@ -1,7 +1,7 @@
 
 // const int MOD = 1'000'000'007;
 // const int MOD = 998'244'353;
-// const int MOD = 1234567891;
+// const int MOD = 1234567891;  // WATCH OUT, this is bigger than 2^31 / 2!
 #pragma region  // mint
 /**
  * Description: modular arithmetic operations
@@ -18,8 +18,9 @@
 #ifndef BENQ_MODINT
 #define BENQ_MODINT
 
-template<int MOD, int RT> struct mint {
+template<int MOD, int MODPHI, int RT> struct mint {
 	static const int mod = MOD;
+	static const int modphi = MODPHI;
 	static constexpr mint rt() { return RT; } // primitive root for FFT
 	int v; explicit operator int() const { return v; } // explicit -> don't silently convert to int
 	mint():v(0) {}
@@ -51,7 +52,7 @@ template<int MOD, int RT> struct mint {
 		for (; p; p /= 2, a *= a) if (p&1) ans *= a;
 		return ans; }
 	friend mint inv(const mint& a) { assert(a.v != 0);
-		return pow(a,MOD-2);
+		return pow(a,modphi-1);
 		// if MOD isn't prime use second version instead.
 		// Alternatively, find totient of MOD and use pow(a, totient-1).
 		// return (1<a) ? (MOD - ll(inv(MOD%a,a))*MOD/a) : (1);
@@ -65,7 +66,7 @@ template<int MOD, int RT> struct mint {
 	friend mint operator/(mint a, const mint& b) { return a /= b; }
 };
 
-using mi = mint<MOD,5>; // 5 is primitive root for both common mods
+using mi = mint<MOD,MOD-1,5>; // 5 is primitive root for both common mods
 using vmi = V<mi>;
 using pmi = pair<mi,mi>;
 using vpmi = V<pmi>;
@@ -77,8 +78,8 @@ void genComb(int SZ) {
 		scmb[i][j] = scmb[i-1][j]+(j?scmb[i-1][j-1]:0);
 }
 
-template <int MOD, int RT>
-string to_string(mint<MOD, RT> modint) {
+template <int MOD, int MODPHI, int RT>
+string to_string(mint<MOD, MODPHI, RT> modint) {
     return to_string((int)modint);
 }
 
