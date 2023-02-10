@@ -105,14 +105,14 @@ tcT, class S> struct LazySeg {
 };
 
 template<class T, class S>
-string to_string(LazySeg<T, S> st) {
+string tsdbg(LazySeg<T, S> st) {
     st.push_all(); vector<T> out;
     FOR(k, st.n, st.n + st.orig_n) { out.push_back(st.seg[k]); }
-    return to_string(out);
+    return tsdbg(out);
 }
 
 
-#pragma region  // Ops: (add constant, set to constant). Query: (min)
+#pragma region  // Customized with ops: (add constant, set to constant). Query: (min)
 /*
     Ops: add a constant; set whole range to a constant
     Query: min, plus "dest" which is something like "most recent SET operation"

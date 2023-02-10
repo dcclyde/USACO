@@ -92,8 +92,8 @@ tcT> struct SegTree { // cmb(ID,b) = b
     }
 };
 template<class T>
-string to_string(SegTree<T> st) {
+string tsdbg(SegTree<T> st) {
     vector<T> out;
     FOR(k, st.n, st.n + st.orig_n) { out.push_back( st.seg[k] ); }
-    return to_string( out );
+    return tsdbg( out );
 }
