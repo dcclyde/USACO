@@ -1,4 +1,5 @@
 /**
+ * dcclyde adds seo: MCF Min cost flow (see also CapacityScaling)
  * Description: Min Cost Circulation w/ Supplies and Demands via Network Simplex
  * Time: ?
  * Source: https://codeforces.com/blog/entry/94190?#comment-832221
@@ -10,11 +11,12 @@ struct NetworkSimplex {
 	using Flow = int64_t; using Cost = int64_t; using V_id = int32_t; using E_id = int32_t;
 	struct Edge { V_id src, dst; Flow flow, cap; Cost cost; };
 	Cost INF = 1; i128 delta = 0;
-	int n; V<Flow> B; V<Cost> P; V<Edge> E;
+	int n; V<Flow> B; V<Cost> P; V<Edge> E; bool verbose;
 	vi pei, depth; V<set<int>> tree;
 	void init(int _n) { n = _n; B.rsz(n+1); pei.assign(n+1,-1);
-		depth.rsz(n+1); P.rsz(n+1); tree.rsz(n+1); }
+		depth.rsz(n+1); P.rsz(n+1); tree.rsz(n+1); verbose=true;}
 	int ae(V_id a, V_id b, Flow l, Flow u, Cost c) {
+		if(verbose) {dbgcP("ae", a, b, l, u, c);}
 		E.pb({a,b,0,u-l,c}); E.pb({b,a,0,0,-c});
 		delta += l*c; B[b] += l, B[a] -= l;
 		return sz(E)-2;
@@ -35,6 +37,7 @@ struct NetworkSimplex {
 		}
 	}
 	i128 solve() {
+		verbose = false;
 		const int m = sz(E);
 		for (E_id i = 0; i < m; i += 2) INF += abs(E[i].cost);
 		F0R(i,n) {
@@ -53,7 +56,7 @@ struct NetworkSimplex {
 				const auto& e = E[ptr];
 				if (e.flow < e.cap) ckmin(pin, mp(e.cost+P[e.src]-P[e.dst],ptr));
 			}
-			auto [cost, ein] = pin; 
+			auto [cost, ein] = pin;
 			if (cost == 0) continue;
 			pair<Cost,E_id> pout{E[ein].cap-E[ein].flow, ein};
 			walk(ein,[&](E_id ei) { ckmin(pout, mp(E[ei].cap-E[ei].flow,ei)); });
@@ -66,7 +69,11 @@ struct NetworkSimplex {
 			z = -1;
 		}
 		F0R(i,n) {
-			if (E[m+2*i].flow < E[m+2*i].cap) throw 5;
+			if (E[m+2*i].flow < E[m+2*i].cap)
+				// throw 5;
+				dbgcBold("infeasible?");
+				return INF;  // infeasible?
+				// ! I think this algorithm sometimes gives invalid results if infeasible? Check by hand?
 			answer += i128(E[m+2*i].flow)*INF;
 		}
 		return answer;
