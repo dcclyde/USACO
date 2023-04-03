@@ -6,7 +6,6 @@
  */
 
 tcT, class S> struct LazySeg {
-    static const ll SENTINEL_R = -17;
 	const T idT{}; const S idS{};  // ! identity
 	int n; V<T> seg; V<S> lazy; int orig_n; int SZ;
 	T cmb(T a, T b) {  // ! seg * seg
@@ -23,20 +22,20 @@ tcT, class S> struct LazySeg {
 	} // recalc values for current node
 	void pull(int ind){seg[ind]=cmb(seg[2*ind],seg[2*ind+1]);}
 	void build() { ROF(i,1,SZ) pull(i); }
-    void push_all(int ind=1, int L=0, int R=SENTINEL_R) {
-        if ( R == SENTINEL_R ) {R = SZ-1;} push(ind, L, R);
+    void push_all(int ind=1, int L=0, int R=-1) {
+        if ( R == -1 ) {R = SZ-1;} push(ind, L, R);
         if (L < R) {int M = (L+R)/2; push_all(2*ind, L, M); push_all(2*ind+1, M+1, R);}
     }
-	void upd(int lo,int hi,S inc,int ind=1,int L=0, int R=SENTINEL_R) {
-        if ( R == SENTINEL_R ) {R = SZ-1;}
+	void upd(int lo,int hi,S inc,int ind=1,int L=0, int R=-1) {
+        if ( R == -1 ) {R = SZ-1;}
 		push(ind,L,R); if (hi < L || R < lo) return;
 		if (lo <= L && R <= hi) {
 			lazy[ind] = inc; push(ind,L,R); return; }
 		int M = (L+R)/2; upd(lo,hi,inc,2*ind,L,M);
 		upd(lo,hi,inc,2*ind+1,M+1,R); pull(ind);
 	}
-	T query(int lo, int hi, int ind=1, int L=0, int R=SENTINEL_R) {
-        if ( R == SENTINEL_R ) {R = SZ-1;}
+	T query(int lo, int hi, int ind=1, int L=0, int R=-1) {
+        if ( R == -1 ) {R = SZ-1;}
 		push(ind,L,R); if (lo > R || L > hi) return idT;
 		if (lo <= L && R <= hi) return seg[ind];
 		int M = (L+R)/2; return cmb(query(lo,hi,2*ind,L,M),
