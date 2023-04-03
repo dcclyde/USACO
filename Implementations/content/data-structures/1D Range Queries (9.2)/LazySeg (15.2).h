@@ -1,3 +1,4 @@
+#pragma region  // LazySeg
 /**
  * Description: 1D range increment and sum query.
  * Source: USACO Counting Haybales
@@ -5,6 +6,7 @@
  */
 
 tcT, class S> struct LazySeg {
+    static const ll SENTINEL_R = -17;
 	const T idT{}; const S idS{};  // ! identity
 	int n; V<T> seg; V<S> lazy; int orig_n; int SZ;
 	T cmb(T a, T b) {  // ! seg * seg
@@ -21,25 +23,26 @@ tcT, class S> struct LazySeg {
 	} // recalc values for current node
 	void pull(int ind){seg[ind]=cmb(seg[2*ind],seg[2*ind+1]);}
 	void build() { ROF(i,1,SZ) pull(i); }
-    void push_all(int ind=1, int L=0, int R=-1) {
-        if ( R == -1 ) {R = SZ-1;} push(ind, L, R);
+    void push_all(int ind=1, int L=0, int R=SENTINEL_R) {
+        if ( R == SENTINEL_R ) {R = SZ-1;} push(ind, L, R);
         if (L < R) {int M = (L+R)/2; push_all(2*ind, L, M); push_all(2*ind+1, M+1, R);}
     }
-	void upd(int lo,int hi,S inc,int ind=1,int L=0, int R=-1) {
-        if ( R == -1 ) {R = SZ-1;}
+	void upd(int lo,int hi,S inc,int ind=1,int L=0, int R=SENTINEL_R) {
+        if ( R == SENTINEL_R ) {R = SZ-1;}
 		push(ind,L,R); if (hi < L || R < lo) return;
 		if (lo <= L && R <= hi) {
 			lazy[ind] = inc; push(ind,L,R); return; }
 		int M = (L+R)/2; upd(lo,hi,inc,2*ind,L,M);
 		upd(lo,hi,inc,2*ind+1,M+1,R); pull(ind);
 	}
-	T query(int lo, int hi, int ind=1, int L=0, int R=-1) {
-        if ( R == -1 ) {R = SZ-1;}
+	T query(int lo, int hi, int ind=1, int L=0, int R=SENTINEL_R) {
+        if ( R == SENTINEL_R ) {R = SZ-1;}
 		push(ind,L,R); if (lo > R || L > hi) return idT;
 		if (lo <= L && R <= hi) return seg[ind];
 		int M = (L+R)/2; return cmb(query(lo,hi,2*ind,L,M),
 			query(lo,hi,2*ind+1,M+1,R));
 	}
+    #pragma region  // first_satisfying
     // // return smallest x s.t. query(base, x) satisfies some criterion
 	// int first_satisfying_R(int base, int val, int ind=1, int l=0, int r=-1) {
 	// 	if (r == -1) {r = n-1;}
@@ -64,6 +67,7 @@ tcT, class S> struct LazySeg {
     //     // ! Look for something different in other child if needed (e.g. if we want sum >= X)
 	// 	return first_satisfying_L(base,val,2*ind,l,m);
 	// }
+    #pragma endregion  // first_satisfying
     void detailed_printouts() {
         #pragma region
         dbg_only(
@@ -110,14 +114,14 @@ string tsdbg(LazySeg<T, S> st) {
     FOR(k, st.n, st.n + st.orig_n) { out.push_back(st.seg[k]); }
     return tsdbg(out);
 }
-
+#pragma endregion  // LazySeg
 
 #pragma region  // Customized with ops: (add constant, set to constant). Query: (min)
 /*
     Ops: add a constant; set whole range to a constant
     Query: min, plus "dest" which is something like "most recent SET operation"
 */
-const int INF = 2e9;
+// const ll INF = INF_ll;
 tcT, class S> struct LazySeg {
 	const T idT{INF, -1}; const S idS{0, -INF};  // ! identity
 	int n; V<T> seg; V<S> lazy; int orig_n; int SZ;
@@ -154,8 +158,8 @@ tcT, class S> struct LazySeg {
         }
     }
 	void push(int ind, int L, int R) { /// modify values for current node
-        lazy_seg(seg[ind], lazy[ind]);
 		// seg[ind] += (R-L+1)*lazy[ind]; // ! lazy * seg
+        lazy_seg(seg[ind], lazy[ind]);
 		if (L != R) F0R(i,2) lazy_lazy(lazy[2*ind+i], lazy[ind]); // ! lazy * lazy
 		lazy[ind] = idS;
 	} // recalc values for current node
@@ -186,8 +190,35 @@ tcT, class S> struct LazySeg {
 		int M = (L+R)/2; return cmb(query(lo,hi,2*ind,L,M),
 			query(lo,hi,2*ind+1,M+1,R));
 	}
+    #pragma region  // first_satisfying
+    // // return smallest x s.t. query(base, x) satisfies some criterion
+	// int first_satisfying_R(int base, int val, int ind=1, int l=0, int r=-1) {
+	// 	if (r == -1) {r = n-1;}
+    //     // ! is there a good idx in [l, r]?
+    //     bool ok = (query(l,r,ind,l,r) >= val);
+	// 	if (r < base || !ok) return -1;
+	// 	if (l == r) return l;
+	// 	int m = (l+r)/2;
+	// 	int res = first_satisfying_R(base,val,2*ind,l,m); if (res != -1) return res;
+    //     // ! Look for something different in other child if needed (e.g. if we want sum >= X)
+	// 	return first_satisfying_R(base,val,2*ind+1,m+1,r);
+	// }
+    // // return largest x s.t. query(x, base) satisfies some criterion
+	// int first_satisfying_L(int base, int val, int ind=1, int l=0, int r=-1) {
+	// 	if (r == -1) {r = n-1;}
+    //     // ! is there a good idx in [l, r]?
+    //     bool ok = (query(l,r,ind,l,r) >= val);
+	// 	if (l > base || !ok) return -1;
+	// 	if (l == r) return l;
+	// 	int m = (l+r)/2;
+	// 	int res = first_satisfying_L(base,val,2*ind+1,m+1,r); if (res != -1) return res;
+    //     // ! Look for something different in other child if needed (e.g. if we want sum >= X)
+	// 	return first_satisfying_L(base,val,2*ind,l,m);
+	// }
+    #pragma endregion  // first_satisfying
     void detailed_printouts() {
-        #pragma region  // call like `dbg_only(st.detailed_printouts);`.
+        #pragma region
+        dbg_only(
         int ST_SIZE = n;
         int ST_PRINT_SIZE = orig_n;
         // ST_PRINT_SIZE = ST_SIZE;  // toggle whether to print irrelevant suffix
@@ -206,7 +237,7 @@ tcT, class S> struct LazySeg {
                 }
                 reverse(all(binary_digits));
                 int L = 0; int R = ST_SIZE-1;
-                for ( int didx = 1 ; didx < binary_digits.size() ; ++didx ) {
+                FOR(didx, 1, binary_digits.size()) {
                     int M = (L+R) / 2;
                     if ( binary_digits[didx] == 1 ) {
                         L = M+1;
@@ -220,7 +251,15 @@ tcT, class S> struct LazySeg {
             }
         }
         el;
+        );  // end dbg_only
         #pragma endregion
     }
 };
+
+template<class T, class S>
+string tsdbg(LazySeg<T, S> st) {
+    st.push_all(); vector<T> out;
+    FOR(k, st.n, st.n + st.orig_n) { out.push_back(st.seg[k]); }
+    return tsdbg(out);
+}
 #pragma endregion

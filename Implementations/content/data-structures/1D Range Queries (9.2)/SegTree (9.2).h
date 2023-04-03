@@ -19,6 +19,7 @@ tcT> struct SegTree { // cmb(ID,b) = b
     void build() { ROF(i,1,n) pull(i); }
 	void upd(int p, T val) { // set val at position p
 		seg[p += n] = val; for (p /= 2; p; p /= 2) pull(p); }
+    void inc(int p, T val) { upd(p, cmb(val, seg[n+p])); }
 	T query(int l, int r) {	// associative op on [l, r]
         if (l > r) {return ID;}
 		T ra = ID, rb = ID;
@@ -28,6 +29,7 @@ tcT> struct SegTree { // cmb(ID,b) = b
 		}
 		return cmb(ra,rb);
 	}
+    #pragma region  // first_satisfying
     // // return smallest x s.t. query(base, x) satisfies some criterion
 	// int first_satisfying_R(int base, int val, int ind=1, int l=0, int r=-1) {
 	// 	if (r == -1) {r = n-1;}
@@ -52,6 +54,7 @@ tcT> struct SegTree { // cmb(ID,b) = b
     //     // ! Look for something different in other child if needed (e.g. if we want sum >= X)
 	// 	return first_satisfying_L(base,val,2*ind,l,m);
 	// }
+    #pragma endregion
     void detailed_printouts() {
         #pragma region
         dbg_only(
@@ -97,3 +100,70 @@ string tsdbg(SegTree<T> st) {
     FOR(k, st.n, st.n + st.orig_n) { out.push_back( st.seg[k] ); }
     return tsdbg( out );
 }
+
+
+#pragma region  // range updates, point queries
+tcT> struct SegTree { // cmb(ID,b) = b
+	const T ID{};  // ! identity
+    T cmb(T a, T b) { return a+b; }  // ! seg * seg
+	int n; V<T> seg; int orig_n;
+	void init(int _n) { // upd, query also work if n = _n
+		for (n = 1; n < _n; ) n *= 2;
+		seg.assign(2*n,ID); orig_n = _n;}
+	void pull(int p) { seg[p] = cmb(seg[2*p],seg[2*p+1]); }
+    void build() { ROF(i,1,n) pull(i); }
+	T query(int p) { // set val at position p
+        T out = seg[p += n]; for (p /= 2; p; p /= 2) out = cmb(out, seg[p]); }
+	void upd(int l, int r, T val) {	// associative op on [l, r]
+        if (l > r) {return;}
+		for (l += n, r += n+1; l < r; l /= 2, r /= 2) {
+			if (l&1) {seg[l] = cmb(seg[l], val); ++l;}
+			if (r&1) {--r; seg[r] = cmb(seg[r], val);}
+		}
+	}
+    void detailed_printouts() {
+        #pragma region
+        dbg_only(
+        int ST_SIZE = n;
+        int ST_PRINT_SIZE = orig_n;
+        // ST_PRINT_SIZE = ST_SIZE;  // toggle whether to print irrelevant suffix
+        el;
+        dbgc("SegTree DETAILS");
+        FOR(k, 1, ST_SIZE + ST_PRINT_SIZE) {
+            if ( k >= ST_SIZE) {
+                int p = k - ST_SIZE;
+                dbgP(k, p, seg[k]);
+            } else {
+                vector<int> binary_digits;
+                int temp = k;
+                while ( temp > 0 ) {
+                    binary_digits.push_back( temp % 2 );
+                    temp /= 2;
+                }
+                reverse(all(binary_digits));
+                int L = 0; int R = ST_SIZE-1;
+                for ( int didx = 1 ; didx < binary_digits.size() ; ++didx ) {
+                    int M = (L+R) / 2;
+                    if ( binary_digits[didx] == 1 ) {
+                        L = M+1;
+                    } else {
+                        R = M;
+                    }
+                }
+                if ( L < ST_PRINT_SIZE ) {
+                    dbgY(k, MP(L,R), seg[k]);
+                }
+            }
+        }
+        el;
+        );  // end dbg_only
+        #pragma endregion
+    }
+};
+template<class T>
+string tsdbg(SegTree<T> st) {
+    vector<T> out;
+    FOR(k, st.n, st.n + st.orig_n) { out.push_back( st.seg[k] ); }
+    return tsdbg( out );
+}
+
