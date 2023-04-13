@@ -15,6 +15,7 @@ template<int SZ, bool VALS_IN_EDGES> struct HLD {
 	LazySeg<ll,ll> tree; // segtree for sum
     void clear() {
         FOR(i, 0, N) { adj[i].clear(); }
+        rpos.clear();
         N = -1;
     }
 	void ae(int x, int y) { adj[x].pb(y), adj[y].pb(x); }
@@ -42,8 +43,23 @@ template<int SZ, bool VALS_IN_EDGES> struct HLD {
 			if (depth[root[x]] > depth[root[y]]) swap(x,y);
 		return depth[x] < depth[y] ? x : y;
 	}
-	/// int dist(int x, int y) { // # edges on path
-	/// 	return depth[x]+depth[y]-2*depth[lca(x,y)]; }
+    int jmp(int x, int d) {
+        // assert(depth[x] >= d);
+        ckmin(d, depth[x]);
+        int target_depth = depth[x] - d;
+        int y = x;
+        while (true) {
+            int o = root[y];
+            if (depth[o] <= target_depth) {
+                int out = rpos[pos[o] + target_depth - depth[o]];
+                return out;
+            }
+            y = par[o];
+        }
+        assert(false);
+    }
+	int dist(int x, int y) { // # edges on path
+		return depth[x]+depth[y]-2*depth[lca(x,y)]; }
 	template <class BinaryOp>
 	void processPath(int x, int y, BinaryOp op) {
 		for (; root[x] != root[y]; y = par[root[y]]) {
