@@ -8,11 +8,11 @@
 
 #include "../../data-structures/1D Range Queries (9.2)/LazySeg (15.2).h"
 
-template<int SZ, bool VALS_IN_EDGES> struct HLD {
+template<int SZ, bool VALS_IN_EDGES, class SEG=ll, class LAZY=ll> struct HLD {
 	int N; vi adj[SZ];
 	int par[SZ], root[SZ], depth[SZ], sz[SZ], ti;
 	int pos[SZ]; vi rpos; // rpos not used but could be useful
-	LazySeg<ll,ll> tree; // segtree for sum
+	LazySeg<SEG,LAZY> tree; // segtree for sum
     void clear() {
         FOR(i, 0, N) { adj[i].clear(); }
         rpos.clear();
@@ -44,7 +44,7 @@ template<int SZ, bool VALS_IN_EDGES> struct HLD {
 		return depth[x] < depth[y] ? x : y;
 	}
     int jmp(int x, int d) {
-        // assert(depth[x] >= d);
+        // assert(depth[x] >= d);  // optional
         ckmin(d, depth[x]);
         int target_depth = depth[x] - d;
         int y = x;
@@ -68,14 +68,37 @@ template<int SZ, bool VALS_IN_EDGES> struct HLD {
 		if (depth[x] > depth[y]) swap(x,y);
 		op(pos[x]+VALS_IN_EDGES,pos[y]);
 	}
-	void modifyPath(int x, int y, int v) {
+	void modifyPath(int x, int y, LAZY v) {
 		processPath(x,y,[this,&v](int l, int r) {
 			tree.upd(l,r,v); }); }
-	ll queryPath(int x, int y) {
-		ll res = tree.idS; processPath(x,y,[this,&res](int l, int r) {
+	SEG queryPath(int x, int y) {
+		SEG res = tree.idT; processPath(x,y,[this,&res](int l, int r) {
             res = tree.cmb(res, tree.query(l,r)); });
-			// res += tree.query(l,r); });
 		return res; }
-	void modifySubtree(int x, int v) {
+	void modifySubtree(int x, LAZY v) {
 		tree.upd(pos[x]+VALS_IN_EDGES,pos[x]+sz[x]-1,v); }
+    SEG querySubtree(int x) {
+        return tree.query(pos[x]+VALS_IN_EDGES,pos[x]+sz[x]-1); }
+	V<pii> get_path_chunks(int x, int y) {
+		V<pii> res = {{-1,-1},{N,N}};
+		processPath(x,y,[this,&res](int l, int r) {
+			res.pb({l,r}); });
+		sort(all(res));
+		return res; }
+	SEG queryExceptPath(int x, int y) {
+		SEG res = tree.idT;
+		auto chunks = get_path_chunks(x, y);
+		FOR(k, 1, chunks.size()) { res = tree.cmb(res, tree.query(chunks[k-1].s + 1, chunks[k].f - 1)); }
+		return res; }
+	void updExceptPath(int x, int y, LAZY v) {
+		auto chunks = get_path_chunks(x, y);
+		FOR(k, 1, chunks.size()) { tree.upd(chunks[k-1].s + 1, chunks[k].f - 1, v); } }
+	SEG queryExceptSubtree(int x) {
+		SEG res = tree.idT;
+		res = tree.cmb(res, tree.query(0, pos[x]+VALS_IN_EDGES - 1));
+		res = tree.cmb(res, tree.query(pos[x] + sz[x], N - 1));
+		return res; }
+	void updExceptSubtree(int x, LAZY v) {
+		tree.upd(0, pos[x]+VALS_IN_EDGES - 1, v);
+		tree.upd(pos[x] + sz[x], N - 1, v); }
 };
