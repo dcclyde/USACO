@@ -1,6 +1,8 @@
 /**
- * Description: Heavy-Light Decomposition, add val to verts
- 	* and query sum in path/subtree.
+ * Description: Heavy-Light Decomposition.
+ * 		Run any lazy segtree queries/updates on path(a, b) or subtree(a).
+ *      Same for on complement of path(a, b) or complement of subtree(a) (costs extra log(log(N)))
+ *      Bonus: depth, LCA, distance, jmp to kth ancestor.
  * Time: any tree path is split into $O(\log N)$ parts
  * Source: http://codeforces.com/blog/entry/22072, https://codeforces.com/blog/entry/53170
  * Verification: *
