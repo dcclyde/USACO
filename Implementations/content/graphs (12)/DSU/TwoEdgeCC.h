@@ -1,14 +1,16 @@
-/** 
+/**
  * Description: 2-Edge-Connected Components
  * Time: O((M+N)\log N)
  * Source: Own
  * Verification: https://judge.yosupo.jp/problem/two_edge_connected_components
  */
- 
+
+// dcclyde note: So far if I find this file then I really wanted "BCC".
+
 struct TwoEdgeCC {
 	struct {
 		vi e; void init(int n) { e = vi(n,-1); }
-		int get(int x) { return e[x] < 0 ? x : e[x] = get(e[x]); } 
+		int get(int x) { return e[x] < 0 ? x : e[x] = get(e[x]); }
 		bool unite(int x, int y) { // set par[y] = x
 			x = get(x), y = get(y); if (x == y) return 0;
 			e[x] += e[y]; e[y] = x; return 1;
@@ -21,7 +23,7 @@ struct TwoEdgeCC {
 		adj.rsz(N), depth.rsz(N), par = vi(N,-1);
 	}
 	void dfs(int x) {
-		each(t,adj[x]) if (t != par[x]) 
+		each(t,adj[x]) if (t != par[x])
 			par[t] = x, depth[t] = depth[x]+1, dfs(t);
 	}
 	void ae(int a, int b) {
