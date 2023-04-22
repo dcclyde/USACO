@@ -1,4 +1,4 @@
-ll GENFAC_MAX = powll(10, 6) + 1;
+const ll GENFAC_MAX = powll(10, 6) + 1;
 #pragma region  // genFac, comb, fac, binom
 /**
  * Description: pre-compute factorial mod inverses,
