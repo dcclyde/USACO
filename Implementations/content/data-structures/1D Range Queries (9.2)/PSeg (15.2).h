@@ -8,10 +8,20 @@
  * Verification:
  	* https://codeforces.com/contest/1090/problem/G
  	* https://codeforces.com/gym/102423/submission/70170291
+
+	PSEG_NODES_ALLOCATED sizing:
+		(int, 1.25e7) made my code use 220mb here: https://codeforces.com/contest/1771/submission/202989566
+		(int, 5e6 barely worked on that problem. 4e6 is too small though.)
  */
 
-tcT, int SZ> struct pseg {
-	static const int LIM = 2e7;  // TODO Get rough numbers to help set this.
+// ! Remember to update LIM, SZ using custom invocation.
+const int PSEG_NODES_ALLOCATED = 1.25e7;  // ~ TODO tune using custom invocation
+const int PSEG_POSITIONS = 200'001;  // ~ TODO update using problem constraints
+
+template<class T, int SZ> struct PersistentSegTree {
+	static const int LIM = PSEG_NODES_ALLOCATED;
+	static const int sz = PSEG_POSITIONS;
+	int orig_n = -1;
 	struct node {
 		int l, r; T val = 0, lazy = 0;  // ! IDlazy  (val is unused)
 		void inc(T x) { lazy += x; }  // ! lazy * lazy
@@ -49,10 +59,25 @@ tcT, int SZ> struct pseg {
 		d[c].l = build(arr,L,M), d[c].r = build(arr,M+1,R);
 		pull(c); return c;
 	}
+
 	vi loc; //// PUBLIC
 	void upd(int lo, int hi, T v) {
 		loc.pb(upd(loc.bk,lo,hi,v,0,SZ-1)); }
 	T query(int ti, int lo, int hi) {
 		return query(loc[ti],lo,hi,0,SZ-1); }
-	void build(const V<T>&arr) {loc.pb(build(arr,0,SZ-1));}
+
+    void clear() { FOR(c, 0, nex) {d[c] = {};} nex = 0; orig_n = -1; loc.clear(); }
+	void init(int n_) { clear(); orig_n = n_; build(V<T>(n_)); }
+	void build(const V<T>&arr) {orig_n = arr.size(); loc.pb(build(arr,0,SZ-1));}
 };
+
+template<class T, int SZ>
+string tsdbg(PersistentSegTree<T, SZ> st, int time) {
+	assert(st.orig_n != -1);
+	V<T> out;
+	FOR(k, 0, st.orig_n) { out.pb(st.query(time, k, k)); }
+    return tsdbg(out);
+}
+
+
+PersistentSegmentTree<int, PSEG_POSITIONS> pst;
