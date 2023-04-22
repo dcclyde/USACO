@@ -5,30 +5,30 @@
  	* avoid issues when vector resizes in C++14 or lower.
  * Memory: O(N+Q\log N)
  * Source: CF, Franklyn Wang
- * Verification: 
+ * Verification:
  	* https://codeforces.com/contest/1090/problem/G
  	* https://codeforces.com/gym/102423/submission/70170291
- */ 
+ */
 
 tcT, int SZ> struct pseg {
-	static const int LIM = 2e7;
-	struct node { 
-		int l, r; T val = 0, lazy = 0; 
-		void inc(T x) { lazy += x; }
-		T get() { return val+lazy; }
+	static const int LIM = 2e7;  // TODO Get rough numbers to help set this.
+	struct node {
+		int l, r; T val = 0, lazy = 0;  // ! IDlazy  (val is unused)
+		void inc(T x) { lazy += x; }  // ! lazy * lazy
+		T get() { return val+lazy; }  // ! lazy * seg
 	};
 	node d[LIM]; int nex = 0;
 	int copy(int c) { d[nex] = d[c]; return nex++; }
-	T cmb(T a, T b) { return min(a,b); }
-	void pull(int c) { d[c].val = 
-		cmb(d[d[c].l].get(), d[d[c].r].get()); } 
+	T cmb(T a, T b) { return min(a,b); }  // ! seg * seg
+	void pull(int c) { d[c].val =
+		cmb(d[d[c].l].get(), d[d[c].r].get()); }
 	//// MAIN FUNCTIONS
-	T query(int c, int lo, int hi, int L, int R) {  
+	T query(int c, int lo, int hi, int L, int R) {
 		if (lo <= L && R <= hi) return d[c].get();
-		if (R < lo || hi < L) return MOD;
+		if (R < lo || hi < L) return MOD;  // ! IDseg
 		int M = (L+R)/2;
 		return d[c].lazy+cmb(query(d[c].l,lo,hi,L,M),
-							query(d[c].r,lo,hi,M+1,R));
+							query(d[c].r,lo,hi,M+1,R));  // ! lazy * seg (again)
 	}
 	int upd(int c, int lo, int hi, T v, int L, int R) {
 		if (R < lo || hi < L) return c;
@@ -50,9 +50,9 @@ tcT, int SZ> struct pseg {
 		pull(c); return c;
 	}
 	vi loc; //// PUBLIC
-	void upd(int lo, int hi, T v) { 
+	void upd(int lo, int hi, T v) {
 		loc.pb(upd(loc.bk,lo,hi,v,0,SZ-1)); }
-	T query(int ti, int lo, int hi) { 
+	T query(int ti, int lo, int hi) {
 		return query(loc[ti],lo,hi,0,SZ-1); }
 	void build(const V<T>&arr) {loc.pb(build(arr,0,SZ-1));}
 };
