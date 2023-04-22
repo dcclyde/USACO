@@ -29,32 +29,125 @@ tcT> struct SegTree { // cmb(ID,b) = b
 		}
 		return cmb(ra,rb);
 	}
-    #pragma region  // first_satisfying
-    // // return smallest x s.t. query(base, x) satisfies some criterion
-	// int first_satisfying_R(int base, int val, int ind=1, int l=0, int r=-1) {
-	// 	if (r == -1) {r = n-1;}
-    //     // ! is there a good idx in [l, r]?
-    //     bool ok = (seg[ind] >= val);
-	// 	if (r < base || !ok) return -1;
-	// 	if (l == r) return l;
-	// 	int m = (l+r)/2;
-	// 	int res = first_satisfying_R(base,val,2*ind,l,m); if (res != -1) return res;
-    //     // ! Look for something different in other child if needed (e.g. if we want sum >= X)
-	// 	return first_satisfying_R(base,val,2*ind+1,m+1,r);
-	// }
-    // // return largest x s.t. query(x, base) satisfies some criterion
-	// int first_satisfying_L(int base, int val, int ind=1, int l=0, int r=-1) {
-	// 	if (r == -1) {r = n-1;}
-    //     // ! is there a good idx in [l, r]?
-    //     bool ok = (seg[ind] >= val);
-	// 	if (l > base || !ok) return -1;
-	// 	if (l == r) return l;
-	// 	int m = (l+r)/2;
-	// 	int res = first_satisfying_L(base,val,2*ind+1,m+1,r); if (res != -1) return res;
-    //     // ! Look for something different in other child if needed (e.g. if we want sum >= X)
-	// 	return first_satisfying_L(base,val,2*ind,l,m);
-	// }
-    #pragma endregion
+    #pragma region  // lstTrue_from_base, fstTrue_from_base
+    // ~ lstTrue_from_base(L, check(v,r)) == lstTrue(L, orig_n-1, check(query(L,r), r)).
+    int lstTrue_from_base(int L, auto&& check) {
+        int ind = 1; int l = 0; int r = n-1;
+        // dbgcBold("lsR", L, MT(ind,l,r), *this);
+        // push(ind,l,r);  // ~ leave these commented for analogy to LazySeg.
+        if (L == 0 && check(seg[ind], r)) {return orig_n-1;}
+
+        while (l != L) {
+            // dbgc("stage 1", ind,l,r, L);
+            int m = (l+r)/2;
+            if (L <= m) {ind = 2*ind; r = m;}
+            else {ind = 2*ind+1; l = m+1;}
+            // push(ind,l,r);
+        }
+
+        T wip = ID;
+        while (true) {
+            T fut = cmb(wip, seg[ind]);
+            // dbgcP("stage 2", ind,l,r, "", fut);
+            if (check(fut,r)) {  // If we can safely add this chunk...
+                wip = fut;
+                if (r == n-1) {
+                    // We've reached the end.
+                    return orig_n-1;
+                } else if (ind & 1) {
+                    // This was a right child.
+                    ind = ind/2 + 1;
+                    int len = r-l+1;
+                    l += len; r += 2*len;
+                } else {
+                    // This was a left child.
+                    ++ind;
+                    int len = r-l+1;
+                    l += len; r += len;
+                }
+                // push(ind,l,r);
+            } else { break; }
+        }
+
+        // (ind,l,r) would reach too far.
+        while (l != r) {
+            // does DL reach too far?
+            int m = (l+r)/2;
+            // push(2*ind, l, m);
+            T fut = cmb(wip, seg[2*ind]);
+            // dbgcW("stage 3", ind,l,r, "", m, fut);
+            if (check(fut,m)) {
+                wip = fut;
+                ind = 2*ind+1;
+                l = m+1;
+                // push(ind,l,r);
+            } else {
+                ind = 2*ind; r = m;
+            }
+        }
+        int out = l-1;
+        ckmin(out, orig_n-1);
+        // dbgR(out); el;
+        return out;
+    }
+
+    // fstTrue_from_base(R, check(v,l)) == fstTrue(0, R, check(query(l,R), l)).
+    int fstTrue_from_base(int R, auto&& check) {
+        int ind = 1; int l = 0; int r = n-1;
+        // dbgcBold("fsb", R, MT(ind,l,r), *this);
+        // push(ind,l,r);  // ~ leave these commented for analogy to LazySeg.
+        if (R == orig_n-1 && check(seg[ind], 0)) {return 0;}
+
+        while (r != R) {
+            // dbgc("stage 1", ind,l,r, R);
+            int m = (l+r)/2;
+            if (R <= m) {ind = 2*ind; r = m;}
+            else {ind = 2*ind+1; l = m+1;}
+            // push(ind,l,r);
+        }
+
+        T wip = ID;
+        while (true) {
+            T fut = cmb(wip, seg[ind]);
+            // dbgcP("stage 2", ind,l,r, "", fut);
+            if (check(fut,l)) {  // If we can safely add this chunk...
+                wip = fut;
+                if (l == 0) {
+                    // We've reached the end.
+                    return 0;
+                } else if (ind & 1) {
+                    // This was a right child.
+                    --ind;
+                    int len = r-l+1;
+                    l -= len; r -= len;
+                } else {
+                    // This was a left child.
+                    ind = ind/2 - 1;
+                    int len = r-l+1;
+                    l -= 2*len; r -= len;
+                }
+                // push(ind,l,r);
+            } else { break; }
+        }
+
+        // (ind,l,r) would reach too far.
+        while (l != r) {
+            // does DR reach too far?
+            int m = (l+r)/2;
+            // push(2*ind+1, m+1, r);
+            T fut = cmb(wip, seg[2*ind+1]);
+            // dbgcW("stage 3", ind,l,r, "", m, fut);
+            if (check(fut,m+1)) {
+                wip = fut; ind *= 2; r = m;
+                // push(ind,l,r);
+            } else {
+                ind = 2*ind+1; l = m+1;
+            }
+        }
+        int out = r+1;
+        return out;
+    }
+    #pragma endregion  // lstTrue_from_base, fstTrue_from_base
     void detailed_printouts() {
         #pragma region
         dbg_only(
@@ -98,7 +191,7 @@ template<class T>
 string tsdbg(SegTree<T> st) {
     vector<T> out;
     FOR(k, st.n, st.n + st.orig_n) { out.push_back( st.seg[k] ); }
-    return tsdbg( out );
+    return tsdbg(out);
 }
 
 
