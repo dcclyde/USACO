@@ -3,6 +3,8 @@
  * Description: 1D range increment and sum query.
  * Source: USACO Counting Haybales
  * Verification: SPOJ Horrible
+ *
+ * lstTrue_from_base, fstTrue_from_base tested on https://codeforces.com/contest/1771/problem/B
  */
 
 tcT, class S> struct LazySeg {
